@@ -1,0 +1,74 @@
+'use strict'
+
+var configMenuScene = {
+    key: 'menuscene' 
+};
+var configPlayScene = {
+    key: 'playscene' 
+};
+var configSkorScene = {
+    key: 'skorscene' 
+};
+
+
+/////////////////////////// MENU SCENE ////////////////////
+class MenuScene extends Phaser.Scene {
+    constructor() { 
+        super(configMenuScene)
+    }
+
+    preload() {}
+
+    create() { 
+        debugger
+    }
+
+    update() {} 
+}
+
+
+/////////////////////////// PLAY SCENE ////////////////////
+class PlayScene extends Phaser.Scene {
+    constructor() { 
+        super(configPlayScene)
+    }
+
+    preload() { }
+
+    create() {
+        debugger
+        let group       = this.add.group();
+        for (let index = 0; index < 5; index++) { 
+    
+            let graphics    = this.add.graphics();
+            let path        = new Phaser.Curves.Path( 0, 0); 
+            path.add(new Phaser.Curves.Ellipse( 200*index, 0, 100));
+            graphics.lineStyle(4, 0xffffff, 6);
+            path.draw(graphics);
+            group.add(graphics);
+        }    
+        group.children.iterate(function (alien,index) {  
+            setTimeout(() => {
+                group.killAndHide(alien); 
+            }, 1000*index);
+        });
+    }
+
+    update() { }
+
+}
+
+
+/////////////////////////// SKOR SCENE ////////////////////
+class SkorScene extends Phaser.Scene {
+    constructor() { 
+        super(configSkorScene)
+    }
+
+    preload() { }
+
+    create() { debugger }
+
+    update() { }
+
+}
