@@ -3,7 +3,7 @@
 class Game{
     currentHalka; 
     enemies = []; 
-    player;
+    player; 
 }
 
 class Cell{ 
