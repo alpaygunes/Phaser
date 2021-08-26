@@ -7,7 +7,7 @@ class PlayScene extends Phaser.Scene {
 
     tableSize   = { rows: 4, columns: 4 }
     level       = 1;
-    container;
+    group;
     player; 
 
     constructor() {
@@ -17,10 +17,10 @@ class PlayScene extends Phaser.Scene {
     preload() { }
 
     create() { 
-        this.container = this.add.container(0, 0);
+        this.group = this.add.group();
         this.addCells();
         this.addPlayer();       
-        this.player.targetCell     = this.container.getAt(1) 
+        this.player.currentCell     = this.group.getFirstAlive()
     }
 
     update() { 
@@ -33,6 +33,8 @@ class PlayScene extends Phaser.Scene {
         let options = {
             x: 0,
             y: 0,
+            _x: 0,
+            _y: 0,
             width: 50,
             height: 50,
             lineStyle: {
@@ -48,13 +50,15 @@ class PlayScene extends Phaser.Scene {
         let row_index = 0, col_index = 0
         for (let index = 0; index < cell_count; index++) {
             if (!(index % this.tableSize.columns)) {
-                row_index++
-                col_index = 0
+                row_index++;
+                col_index = 0;
             }
+
             col_index++
-            options.x = 2 * options.width * col_index
-            options.y = 2 * options.height * row_index
-            let cell = new Cell(this, options);
+            options._x =  (2*col_index - 1)*options.height
+            options._y =  (2*row_index - 1)*options.width 
+ 
+            let cell = new Cell(this, Object.assign({}, options));
             let cellObj = cell.agCreate()
             // cell e tıklayınca önce hepsi işaretsiz olsun. Sonra sadece tıklanan işaretlensin
             cellObj.on('pointerdown', () => {
@@ -63,17 +67,15 @@ class PlayScene extends Phaser.Scene {
                     cellObj.agUnMarkAsNext()
                     return
                 }
-                cells.map(cell => {
-                    cell.agUnMarkAsNext()
-                })
+                cells.map(cell => { cell.agUnMarkAsNext() })
                 cellObj.agMarkAsNext()
                 this.player.targetCell     = cellObj 
-            });
-
+            }); 
             cellObj.id = index
             cells.push(cellObj)
+            this.group.add(cellObj); 
         } 
-        this.container.add(cells); 
+        
     }
 
     // ------------------------------------- Add Player
@@ -98,7 +100,7 @@ class PlayScene extends Phaser.Scene {
              
         });
         this.add.existing(this.player)
-        //this.container.add(this.player); 
+        //this.group.add(this.player); 
     }
 
 }
