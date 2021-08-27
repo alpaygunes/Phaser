@@ -16,7 +16,7 @@ class Cell extends Phaser.GameObjects.Graphics {
 
     agCreate(){   
         this.orbital            = new Phaser.Curves.Path(); 
-        let elips               = new Phaser.Curves.Ellipse( this.options._x, this.options._y, this.options.height)
+        let elips               = new Phaser.Curves.Ellipse( this.options._x, this.options._y, this.options.height) 
         this.orbital.add(elips);  
         this.orbital.draw(this); 
         
@@ -46,8 +46,7 @@ class Cell extends Phaser.GameObjects.Graphics {
     agUnMarkAsNext(){
         this.markAsNext = false
         this.clear() 
-        this.fillStyle(0xffffff);
-        console.log(this.options._x, this.options._y)
+        this.fillStyle(0xffffff); 
         this.circle = new Phaser.Geom.Circle(this.options._x, this.options._y,this.options.height); 
         this.fillCircleShape(this.circle);  
     }
