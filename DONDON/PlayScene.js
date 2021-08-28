@@ -5,10 +5,12 @@ var configPlayScene = {
 };
 class PlayScene extends Phaser.Scene {
 
-    tableSize = { rows: 5, columns: 6 }
+    tableSize = { rows: 2, columns: 2 }
     level = 1;
     group;
     player;
+    sol_bosluk = 0;
+    top_bosluk = 0;
 
     constructor() {
         super(configPlayScene)
@@ -23,20 +25,44 @@ class PlayScene extends Phaser.Scene {
         this.player.currentCell = this.group.getFirstAlive()
     }
 
-    update() {
-
-    }
+    /*update() {
+ 
+     }*/
 
 
     // -------------------------------------  create cells 
     addCells() {
+        let screen_w = this.sys.game.scale.gameSize.width
+        let screen_h = this.sys.game.scale.gameSize.height
+        let grup_w = screen_w * .8
+        let grup_h = screen_h * .8
+        let cell_w,cell_h
+        //ekran genişmi yüksek mi ?
+
+        if (screen_h > screen_w) {// dar ekran
+            cell_w = Math.floor(grup_w / this.tableSize.columns) 
+            cell_h = cell_w 
+            grup_h = this.tableSize.rows * cell_w
+        } else {
+            cell_h = Math.floor(grup_h / this.tableSize.rows) 
+            cell_w = cell_h 
+            grup_w = this.tableSize.columns * cell_h
+        }
+
+        this.sol_bosluk = (screen_w - grup_w) / 2
+        this.top_bosluk = (screen_h - grup_h) / 2
+
+
+
+
+
         let options = {
             x: 0,
             y: 0,
             _x: 0,
             _y: 0,
-            width: 50,
-            height: 50,
+            width: cell_w / 2,
+            height: cell_h / 2,
             lineStyle: {
                 width: 2,
                 color: 0xffffff,
@@ -55,17 +81,17 @@ class PlayScene extends Phaser.Scene {
             }
 
             col_index++
-            options._x = (2 * col_index - 1) * options.height
-            options._y = (2 * row_index - 1) * options.width
+            options._x = ((2 * col_index - 1) * options.height) + this.sol_bosluk
+            options._y = ((2 * row_index - 1) * options.width) + this.top_bosluk
 
             let cell = new Cell(this, Object.assign({}, options));
             let cellObj = cell.agCreate()
             // cell e tıklayınca önce hepsi işaretsiz olsun. Sonra sadece tıklanan işaretlensin
             cellObj.on('pointerdown', () => {
                 //işaretli olana tekrar tıklanmışsa işareti kaldır
-                if (cellObj.markAsNext) { 
+                if (cellObj.markAsNext) {
                     // Eğer iki defa tıklanırsa playerin yönünü değiştir 
-                    if (this.player.currentCell == cellObj) { 
+                    if (this.player.currentCell == cellObj) {
                         this.player.switchMovement();
                     }
                     cellObj.agUnMarkAsNext()
