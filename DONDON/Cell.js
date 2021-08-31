@@ -3,9 +3,9 @@
 class Cell extends Phaser.GameObjects.Graphics {
     options; 
     markAsNext = false;
-    circle;
+    body_circle;
     orbital;
-    shape;
+    hit_area_shape;
     id;
     constructor(scene, options) {
         super(scene, options);
@@ -16,16 +16,15 @@ class Cell extends Phaser.GameObjects.Graphics {
 
     agCreate(){   
         this.orbital            = new Phaser.Curves.Path(); 
-        let elips               = new Phaser.Curves.Ellipse( this.options._x, this.options._y, this.options.height) 
+        let elips               = new Phaser.Curves.Ellipse( this.options._x, this.options._y, this.options.height)  
         this.orbital.add(elips);  
         this.orbital.draw(this); 
+         
+        this.body_circle             = new Phaser.Geom.Circle(this.options._x, this.options._y,this.options.height); 
+        this.fillCircleShape(this.body_circle);
         
-        this.fillStyle(0xffffff);
-        this.circle             = new Phaser.Geom.Circle(this.options._x, this.options._y,this.options.height); 
-        this.fillCircleShape(this.circle);
-        
-        this.shape              = new Phaser.Geom.Circle(this.options._x, this.options._y, this.options.height); 
-        this.setInteractive(this.shape,Phaser.Geom.Circle.Contains);
+        this.hit_area_shape              = new Phaser.Geom.Circle(this.options._x, this.options._y, this.options.height); 
+        this.setInteractive(this.hit_area_shape,Phaser.Geom.Circle.Contains);
         return this;
     }
 
@@ -33,22 +32,17 @@ class Cell extends Phaser.GameObjects.Graphics {
     agMarkAsNext(){  
         this.markAsNext = !this.markAsNext
         this.clear() 
-        this.fillStyle(0xff0000);
-        this.circle = new Phaser.Geom.Circle(this.options._x, this.options._y,this.options.height); 
-        this.fillCircleShape(this.circle); 
-        if(this.markAsNext){
-            this.fillStyle(0xff0000);
-        }else{
-            this.fillStyle(0xff0000);
-        } 
+        this.fillStyle(0x123456);
+        this.body_circle = new Phaser.Geom.Circle(this.options._x, this.options._y,this.options.height); 
+        this.fillCircleShape(this.body_circle); 
+        this.fillStyle(this.options.fillStyle.color);
     }
 
     agUnMarkAsNext(){
         this.markAsNext = false
-        this.clear() 
-        this.fillStyle(0xffffff); 
-        this.circle = new Phaser.Geom.Circle(this.options._x, this.options._y,this.options.height); 
-        this.fillCircleShape(this.circle);  
+        this.clear()  
+        this.body_circle = new Phaser.Geom.Circle(this.options._x, this.options._y,this.options.height); 
+        this.fillCircleShape(this.body_circle);  
     }
 
      /*preUpdate(time, delta) {  

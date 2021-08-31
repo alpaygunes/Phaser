@@ -1,17 +1,22 @@
 'use strict'
 
-class Player extends Phaser.GameObjects.Graphics {
-    options; 
+class Enemy extends Phaser.GameObjects.Graphics {
+    options;
     current_cell;
-    orbital; 
+    orbital;
     follower;
-    body_circle; 
+    body_circle;
     sensitivity = 0.002;
-    speed       = 500; //  = 1/ms  
-    count       = 9999999999999;
+    speed = 500; //  = 1/ms  
+    count = 9999999999999;
+    name;
+    orbital_path;
+    nextCell = null;
+
     constructor(scene, options) {
         super(scene, options);
-        this.options = options
+        this.options = options;
+        this.name = (Math.random() + 1).toString(36).substring(7);
         // ...
         //scene.add.existing(this);
     }
@@ -28,14 +33,14 @@ class Player extends Phaser.GameObjects.Graphics {
             this.count -= (1 / this.speed)
         }
         this.follower.t = this.count % 1
-        this.orbital    = this.current_cell.orbital;
-        this.orbital.getPoint(this.follower.t, this.follower.vec);
-        let x           = (this.current_cell.x + this.follower.vec.x);
-        let y           = (this.current_cell.y + this.follower.vec.y);
-        this.clear() 
+        this.orbital_path.getPoint(this.follower.t, this.follower.vec);
+        let x = (this.current_cell.x + this.follower.vec.x);
+        let y = (this.current_cell.y + this.follower.vec.y);
+        this.clear()
         this.body_circle = new Phaser.Geom.Circle(x, y, this.options.height);
         this.fillCircleShape(this.body_circle);
         this.changeCell();
+        this.setNextCell();
     }
 
     changeCell() {
@@ -48,47 +53,52 @@ class Player extends Phaser.GameObjects.Graphics {
         )) {
             return;
         }
+
         this.scene.cell_group.children.each(function (c) {
             let cell = c
             // mevcut cell hariç diğerlerini kontrol edelim
             if (cell.id != this.current_cell.id) {
                 if (Phaser.Geom.Intersects.CircleToCircle(this.body_circle, cell.body_circle)) {
-                    if (cell.markAsNext) {
-                        // üsttekine geçiş oluyorsa
-                         
+                    if (cell == this.nextCell) {
+                        // üsttekine geçiş oluyorsa 
                         if (cell.body_circle.y > this.current_cell.body_circle.y) {
-                            cell.orbital.curves[0].angle = 270
+                            this.orbital_path = cell.getOrbitalPath(this.name, 270)
                         }
-
                         // sağdakine geçiş oluyorsa
                         if (cell.body_circle.x > this.current_cell.body_circle.x) {
-                            cell.orbital.curves[0].angle = 180
+                            this.orbital_path = cell.getOrbitalPath(this.name, 180)
                         }
-
                         // aşağı geçiş oluyorsa
                         if (cell.body_circle.y < this.current_cell.body_circle.y) {
-                            cell.orbital.curves[0].angle = 90
+                            this.orbital_path = cell.getOrbitalPath(this.name, 90)
                         }
-
                         // soldakine geçiş oluyorsa
                         if (cell.body_circle.x < this.current_cell.body_circle.x) {
-                            cell.orbital.curves[0].angle = 0
+                            this.orbital_path = cell.getOrbitalPath(this.name, 0)
                         }
 
                         this.current_cell = cell
-                        //this.tw.restart() 0  
                         this.count = 99999999
                         this.switchMovement();
-                        cell.agUnMarkAsNext();
+                        this.nextCell = null  
                     }
                 }
             }
         }, this);
-    } 
+    }
 
     // hücre içinde iken iki defa tıklaynınca hareketin yönünü değiştir
     switchMovement() {
         //debugger
         this.mov_const = (this.mov_const == '+') ? '-' : '+'
     }
+
+    //Sonraki hücreyi ayarla
+    setNextCell() { 
+        if (this.nextCell == null) {
+            let cells = this.current_cell.getNeighbor();
+            this.nextCell = cells[Math.floor(Math.random() * cells.length)]
+        }
+    }
+
 }

@@ -1,11 +1,11 @@
 'use strict'
 
-class Player extends Phaser.GameObjects.Graphics {
+class Enemy extends Phaser.GameObjects.Graphics {
     options; 
     current_cell;
-    orbital; 
+    orbital;
     follower;
-    body_circle; 
+    body_circle;
     sensitivity = 0.002;
     speed       = 500; //  = 1/ms  
     count       = 9999999999999;
@@ -27,11 +27,11 @@ class Player extends Phaser.GameObjects.Graphics {
         } else {
             this.count -= (1 / this.speed)
         }
-        this.follower.t = this.count % 1
-        this.orbital    = this.current_cell.orbital;
+        this.follower.t = this.count % 1 
+        this.orbital = this.current_cell.orbital;
         this.orbital.getPoint(this.follower.t, this.follower.vec);
-        let x           = (this.current_cell.x + this.follower.vec.x);
-        let y           = (this.current_cell.y + this.follower.vec.y);
+        let x = (this.current_cell.x + this.follower.vec.x);
+        let y = (this.current_cell.y + this.follower.vec.y);
         this.clear() 
         this.body_circle = new Phaser.Geom.Circle(x, y, this.options.height);
         this.fillCircleShape(this.body_circle);
@@ -55,7 +55,6 @@ class Player extends Phaser.GameObjects.Graphics {
                 if (Phaser.Geom.Intersects.CircleToCircle(this.body_circle, cell.body_circle)) {
                     if (cell.markAsNext) {
                         // üsttekine geçiş oluyorsa
-                         
                         if (cell.body_circle.y > this.current_cell.body_circle.y) {
                             cell.orbital.curves[0].angle = 270
                         }
@@ -79,7 +78,6 @@ class Player extends Phaser.GameObjects.Graphics {
                         //this.tw.restart() 0  
                         this.count = 99999999
                         this.switchMovement();
-                        cell.agUnMarkAsNext();
                     }
                 }
             }

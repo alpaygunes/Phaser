@@ -1,17 +1,24 @@
 'use strict'
 
 class Player extends Phaser.GameObjects.Graphics {
-    options; 
+    options;
     current_cell;
-    orbital; 
+    orbital;
     follower;
-    body_circle; 
+    body_circle;
     sensitivity = 0.002;
-    speed       = 500; //  = 1/ms  
-    count       = 9999999999999;
+    speed = 500; //  = 1/ms  
+    count = 9999999999999;
+    name;
+    orbital_path;
+    cember_turlama_parcalari = []
+    cember_turlama_bitis_indexi = 0;
+    cember_turu_tamam = false;
+
     constructor(scene, options) {
         super(scene, options);
         this.options = options
+        this.name = (Math.random() + 1).toString(36).substring(7);
         // ...
         //scene.add.existing(this);
     }
@@ -22,20 +29,21 @@ class Player extends Phaser.GameObjects.Graphics {
     }
 
     preUpdate(time, delta) {
-        if (this.mov_const == '+') {
+        if (this.hareket_yonu == '+') {
             this.count += (1 / this.speed)
         } else {
             this.count -= (1 / this.speed)
         }
+
         this.follower.t = this.count % 1
-        this.orbital    = this.current_cell.orbital;
-        this.orbital.getPoint(this.follower.t, this.follower.vec);
-        let x           = (this.current_cell.x + this.follower.vec.x);
-        let y           = (this.current_cell.y + this.follower.vec.y);
-        this.clear() 
+        this.orbital_path.getPoint(this.follower.t, this.follower.vec);
+        let x = (this.current_cell.x + this.follower.vec.x);
+        let y = (this.current_cell.y + this.follower.vec.y);
+        this.clear()
         this.body_circle = new Phaser.Geom.Circle(x, y, this.options.height);
         this.fillCircleShape(this.body_circle);
         this.changeCell();
+        this.tarananCemberMiktariniHesapla()
     }
 
     changeCell() {
@@ -54,29 +62,29 @@ class Player extends Phaser.GameObjects.Graphics {
             if (cell.id != this.current_cell.id) {
                 if (Phaser.Geom.Intersects.CircleToCircle(this.body_circle, cell.body_circle)) {
                     if (cell.markAsNext) {
-                        // üsttekine geçiş oluyorsa
-                         
+                        // üsttekine geçiş oluyorsa 
                         if (cell.body_circle.y > this.current_cell.body_circle.y) {
-                            cell.orbital.curves[0].angle = 270
+                            this.orbital_path = cell.getOrbitalPath(this.name, 270)
                         }
-
                         // sağdakine geçiş oluyorsa
                         if (cell.body_circle.x > this.current_cell.body_circle.x) {
-                            cell.orbital.curves[0].angle = 180
+                            this.orbital_path = cell.getOrbitalPath(this.name, 180)
                         }
-
                         // aşağı geçiş oluyorsa
                         if (cell.body_circle.y < this.current_cell.body_circle.y) {
-                            cell.orbital.curves[0].angle = 90
+                            this.orbital_path = cell.getOrbitalPath(this.name, 90)
                         }
-
                         // soldakine geçiş oluyorsa
                         if (cell.body_circle.x < this.current_cell.body_circle.x) {
-                            cell.orbital.curves[0].angle = 0
+                            this.orbital_path = cell.getOrbitalPath(this.name, 0)
                         }
 
                         this.current_cell = cell
-                        //this.tw.restart() 0  
+                        this.cember_turlama_parcalari.splice(0, this.cember_turlama_parcalari.length)
+                        this.cember_turlama_parcalari.length = 0
+                        this.cember_turlama_bitis_indexi    = 0;
+                        this.cember_turu_tamam              = false;
+                        console.log("Sıfırlandı")
                         this.count = 99999999
                         this.switchMovement();
                         cell.agUnMarkAsNext();
@@ -84,11 +92,30 @@ class Player extends Phaser.GameObjects.Graphics {
                 }
             }
         }, this);
-    } 
+    }
 
     // hücre içinde iken iki defa tıklaynınca hareketin yönünü değiştir
     switchMovement() {
         //debugger
-        this.mov_const = (this.mov_const == '+') ? '-' : '+'
+        this.hareket_yonu = (this.hareket_yonu == '+') ? '-' : '+'
+        this.cember_turlama_bitis_indexi = this.follower.t.toFixed(3) * 1000
+    }
+
+    tarananCemberMiktariniHesapla() {
+        if(this.cember_turu_tamam) {console.log("Tur zaten tamamlanmış");return;}
+        let index = this.follower.t.toFixed(3) * 1000
+        this.cember_turlama_parcalari[index] = this.follower.t.toFixed(3)
+        if (this.cember_turlama_parcalari.length == 999) {
+            if (index == this.cember_turlama_bitis_indexi) {// başa döndüyse 
+                console.log("TAMAM"); 
+                let odul = new Phaser.Geom.Circle(
+                                                          this.current_cell.options._x
+                                                        , this.current_cell.options._y
+                                                        , this.current_cell.options.height/2);
+                this.current_cell.fillStyle(0x123fff); 
+                this.current_cell.fillCircleShape(odul);
+                this.cember_turu_tamam = true;
+            }
+        }
     }
 }
