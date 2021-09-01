@@ -7,6 +7,7 @@ class Cell extends Phaser.GameObjects.Graphics {
     body_circle;
     orbital;
     hit_area_shape;
+    txt;
 
     constructor(scene, options) {
         super(scene, options);
@@ -20,27 +21,30 @@ class Cell extends Phaser.GameObjects.Graphics {
         this.orbital = new Phaser.Curves.Path();
 
         this.body_circle = new Phaser.Geom.Circle(this.options._x, this.options._y, this.options.height);
-        this.fillCircleShape(this.body_circle);
+        this.strokeCircleShape(this.body_circle);
 
         this.hit_area_shape = new Phaser.Geom.Circle(this.options._x, this.options._y, this.options.height);
         this.setInteractive(this.hit_area_shape, Phaser.Geom.Circle.Contains);
+
+        this.txt     = new MyText(this.scene, this.options._x, this.options._y, null,{color:'#DCE2AA'}); 
+
         return this;
     }
 
     agMarkAsNext() {
         this.markAsNext = !this.markAsNext
         this.clear()
-        this.fillStyle(0x123456);
+        this.lineStyle(5, 0xb57f50, 1.0);
         this.body_circle = new Phaser.Geom.Circle(this.options._x, this.options._y, this.options.height);
-        this.fillCircleShape(this.body_circle);
-        this.fillStyle(this.options.fillStyle.color);
+        this.strokeCircleShape(this.body_circle);
+        
     }
 
     agUnMarkAsNext() {
         this.markAsNext = false
         this.clear()
         this.body_circle = new Phaser.Geom.Circle(this.options._x, this.options._y, this.options.height);
-        this.fillCircleShape(this.body_circle);
+        this.strokeCircleShape(this.body_circle);;
     }
 
     getOrbitalPath(name, angle) {

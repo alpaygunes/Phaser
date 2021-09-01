@@ -14,6 +14,7 @@ class Player extends Phaser.GameObjects.Graphics {
     cember_turlama_parcalari = []
     cember_turlama_bitis_indexi = 0;
     cember_turu_tamam = false;
+    particles;
 
     constructor(scene, options) {
         super(scene, options);
@@ -21,9 +22,22 @@ class Player extends Phaser.GameObjects.Graphics {
         this.name = (Math.random() + 1).toString(36).substring(7);
         // ...
         //scene.add.existing(this);
+
     }
 
     agCreate() {
+        this.particles = this.scene.add.particles('flares');
+        this.particles.createEmitter({
+            frame: 'blue',
+            x: this.options.x,
+            y: this.options.y, 
+            lifespan: 100,
+            angle: { min: 0, max: 360 },
+            speed: { min: 100, max: 200 },
+            scale: { start: 0.3, end: 0 }, 
+            bounce: 0.1,   
+            blendMode: 'ADD'
+        });
         this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
         return this;
     }
@@ -44,6 +58,8 @@ class Player extends Phaser.GameObjects.Graphics {
         this.fillCircleShape(this.body_circle);
         this.changeCell();
         this.tarananCemberMiktariniHesapla()
+        this.particles.x = x
+        this.particles.y = y
     }
 
     changeCell() {
@@ -82,9 +98,9 @@ class Player extends Phaser.GameObjects.Graphics {
                         this.current_cell = cell
                         this.cember_turlama_parcalari.splice(0, this.cember_turlama_parcalari.length)
                         this.cember_turlama_parcalari.length = 0
-                        this.cember_turlama_bitis_indexi    = 0;
-                        this.cember_turu_tamam              = false;
-                        console.log("Sıfırlandı")
+                        this.cember_turlama_bitis_indexi = 0;
+                        this.cember_turu_tamam = false;
+                        console.log("Sıfırlandı", this.cember_turlama_parcalari)
                         this.count = 99999999
                         this.switchMovement();
                         cell.agUnMarkAsNext();
@@ -98,22 +114,27 @@ class Player extends Phaser.GameObjects.Graphics {
     switchMovement() {
         //debugger
         this.hareket_yonu = (this.hareket_yonu == '+') ? '-' : '+'
-        this.cember_turlama_bitis_indexi = this.follower.t.toFixed(3) * 1000
     }
 
     tarananCemberMiktariniHesapla() {
-        if(this.cember_turu_tamam) {console.log("Tur zaten tamamlanmış");return;}
-        let index = this.follower.t.toFixed(3) * 1000
-        this.cember_turlama_parcalari[index] = this.follower.t.toFixed(3)
-        if (this.cember_turlama_parcalari.length == 999) {
+        let index = this.follower.t.toFixed(2) * 100
+
+        this.current_cell.txt.text = Object.keys(this.cember_turlama_parcalari).length
+
+        if (this.cember_turu_tamam) { console.log("Tur zaten tamamlanmış"); return; }
+
+        this.cember_turlama_parcalari[index] = this.follower.t.toFixed(2)
+        console.log("this.cember_turlama_bitis_indexi", this.cember_turlama_bitis_indexi);
+        if (Object.keys(this.cember_turlama_parcalari).length == 101) {
             if (index == this.cember_turlama_bitis_indexi) {// başa döndüyse 
-                console.log("TAMAM"); 
+                console.log("TAMAM");
                 let odul = new Phaser.Geom.Circle(
-                                                          this.current_cell.options._x
-                                                        , this.current_cell.options._y
-                                                        , this.current_cell.options.height/2);
-                this.current_cell.fillStyle(0x123fff); 
+                    this.current_cell.options._x
+                    , this.current_cell.options._y
+                    , this.current_cell.options.height / 2);
+                this.current_cell.fillStyle(0x123fff);
                 this.current_cell.fillCircleShape(odul);
+
                 this.cember_turu_tamam = true;
             }
         }
