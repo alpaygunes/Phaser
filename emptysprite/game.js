@@ -45,8 +45,7 @@ function halkalariOlustur (){
 
         var shape   = new Phaser.Geom.Circle(200*index+100, 100, 100);
         graphics.setInteractive(shape,Phaser.Geom.Circle.Contains);
-        graphics.on('pointerdown', (obj)=>{
-            console.log(graphics) 
+        graphics.on('pointerdown', (obj)=>{ 
             let star = this.group.getChildren().find(v => v.name === graphics.name);
             star.destroy() 
         });

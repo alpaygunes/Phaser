@@ -94,16 +94,18 @@ class Player extends Phaser.GameObjects.Graphics {
                         if (cell.body_circle.x < this.current_cell.body_circle.x) {
                             this.orbital_path = cell.getOrbitalPath(this.name, 0)
                         }
-
-                        this.current_cell = cell
+ 
+                        // bir satır sonra önceki olacak. önceki hücreyi pasif olarak işaretleyelim agMarkAsActive olmasın
+                        this.current_cell.agUnMarkAsNext(); 
+                        this.current_cell                       = cell
                         this.cember_turlama_parcalari.splice(0, this.cember_turlama_parcalari.length)
-                        this.cember_turlama_parcalari.length = 0
-                        this.cember_turlama_bitis_indexi = 0;
-                        this.cember_turu_tamam = false;
-                        console.log("Sıfırlandı", this.cember_turlama_parcalari)
-                        this.count = 99999999
+                        this.cember_turlama_parcalari.length    = 0
+                        this.cember_turlama_bitis_indexi        = 0;
+                        this.cember_turu_tamam                  = false; 
+                        this.count                              = 99999999
                         this.switchMovement();
                         cell.agUnMarkAsNext();
+                        cell.agMarkAsActive();
                     }
                 }
             }
@@ -121,13 +123,11 @@ class Player extends Phaser.GameObjects.Graphics {
 
         this.current_cell.txt.text = Object.keys(this.cember_turlama_parcalari).length
 
-        if (this.cember_turu_tamam) { console.log("Tur zaten tamamlanmış"); return; }
+        if (this.cember_turu_tamam)return;
 
-        this.cember_turlama_parcalari[index] = this.follower.t.toFixed(2)
-        console.log("this.cember_turlama_bitis_indexi", this.cember_turlama_bitis_indexi);
+        this.cember_turlama_parcalari[index] = this.follower.t.toFixed(2) 
         if (Object.keys(this.cember_turlama_parcalari).length == 101) {
-            if (index == this.cember_turlama_bitis_indexi) {// başa döndüyse 
-                console.log("TAMAM");
+            if (index == this.cember_turlama_bitis_indexi) {// başa döndüyse  
                 let odul = new Phaser.Geom.Circle(
                     this.current_cell.options._x
                     , this.current_cell.options._y

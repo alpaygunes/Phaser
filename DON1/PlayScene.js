@@ -5,33 +5,45 @@ var configPlayScene = {
 };
 class PlayScene extends Phaser.Scene {
 
-    table_size          = { rows: 8, columns: 4 }
+    table_size = { rows: 4, columns: 3 }
     target_cell;
-    level               = 1;
+    level = 1;
     cell_group;
     enemy_group;
     player;
-    sol_bosluk          = 0;
-    top_bosluk          = 0;
-    game_status         = 'stop';
-    firstClickTime      = 0
-    enemies             = [];
-    enemy_count         = 20
+    sol_bosluk = 0;
+    top_bosluk = 0;
+    game_status = 'stop'; // play | stop
+    firstClickTime = 0
+    enemies = [];
+    enemy_count = 10
     flares;
 
     constructor() {
         super(configPlayScene)
     }
 
-    preload() {  
+    preload() {
         this.load.atlas('flares', 'assets/flares.png', 'assets/flares.json');
     }
 
-    create() { 
+    create() {
         this.cell_group = this.add.group();
         this.enemy_group = this.add.group();
         this.addCells();
         this.addEnemies();
+    }
+
+    update() {
+        if (this.game_status == 'play') {
+            this.enemy_group.children.each(function (enemy) {
+                if(enemy.current_cell === this.player.current_cell){
+                    if (Phaser.Geom.Intersects.CircleToCircle(enemy.body_circle, this.player.body_circle)) {
+                        console.log("-----  TEMAS  ---")
+                    }
+                }
+            }.bind(this))
+        } // ----- end if  
     }
 
     //------------ add enemy
@@ -54,7 +66,7 @@ class PlayScene extends Phaser.Scene {
         }
 
         for (let index = 0; index < this.enemy_count; index++) {
-            setTimeout(() => { 
+            setTimeout(() => {
                 let random_cell = Math.floor(Math.random() * this.cell_group.getChildren().length)
                 let enemy = new Enemy(this, options).agCreate()
                 let cell = this.cell_group.getChildren()[random_cell]
@@ -62,7 +74,7 @@ class PlayScene extends Phaser.Scene {
                 enemy.current_cell = cell
                 this.add.existing(enemy)
                 this.enemy_group.add(enemy);
-            }, Math.random() * 200*this.enemy_count);
+            }, Math.random() * 200 * this.enemy_count);
         }
 
 
@@ -155,7 +167,11 @@ class PlayScene extends Phaser.Scene {
                     cellObj.agUnMarkAsNext()
                     return
                 }
-                cells.map(cell => { cell.agUnMarkAsNext() })
+                cells.map(cell => {
+                    if (this.player?.current_cell !== cell) {
+                        cell.agUnMarkAsNext()
+                    }
+                })
                 cellObj.agMarkAsNext()
                 this.player.target_cell = cellObj
 

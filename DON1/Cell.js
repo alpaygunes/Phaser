@@ -7,7 +7,7 @@ class Cell extends Phaser.GameObjects.Graphics {
     body_circle;
     orbital;
     hit_area_shape;
-    txt;
+    txt; 
 
     constructor(scene, options) {
         super(scene, options);
@@ -26,7 +26,7 @@ class Cell extends Phaser.GameObjects.Graphics {
         this.hit_area_shape = new Phaser.Geom.Circle(this.options._x, this.options._y, this.options.height);
         this.setInteractive(this.hit_area_shape, Phaser.Geom.Circle.Contains);
 
-        this.txt     = new MyText(this.scene, this.options._x, this.options._y, null,{color:'#DCE2AA'}); 
+        this.txt = new MyText(this.scene, this.options._x, this.options._y, null, { color: '#DCE2AA' });
 
         return this;
     }
@@ -34,10 +34,10 @@ class Cell extends Phaser.GameObjects.Graphics {
     agMarkAsNext() {
         this.markAsNext = !this.markAsNext
         this.clear()
-        this.lineStyle(5, 0xb57f50, 1.0);
+        this.lineStyle(5, 0xb57fff, 1.0);
         this.body_circle = new Phaser.Geom.Circle(this.options._x, this.options._y, this.options.height);
         this.strokeCircleShape(this.body_circle);
-        
+
     }
 
     agUnMarkAsNext() {
@@ -73,29 +73,35 @@ class Cell extends Phaser.GameObjects.Graphics {
         let cells = []
         this.scene.cell_group.children.each((cell) => {
             //üste varsa
-            if (this.options._x == cell.options._x && (this.options._y - 2*cell.options.height) == cell.options._y) {
+            if (this.options._x == cell.options._x && (this.options._y - 2 * cell.options.height) == cell.options._y) {
                 cells.push(cell)
             }
 
             //altta varsa
-            if (this.options._x == cell.options._x && (this.options._y + 2*cell.options.height) == cell.options._y) {
+            if (this.options._x == cell.options._x && (this.options._y + 2 * cell.options.height) == cell.options._y) {
                 cells.push(cell)
             }
 
             //solda varsa 
-            if (this.options._y == cell.options._y && (this.options._x - 2*cell.options.width) == cell.options._x) {
+            if (this.options._y == cell.options._y && (this.options._x - 2 * cell.options.width) == cell.options._x) {
                 cells.push(cell)
             }
 
             //sağda varsa 
-            if (this.options._y == cell.options._y && (this.options._x + 2*cell.options.width) == cell.options._x) {
+            if (this.options._y == cell.options._y && (this.options._x + 2 * cell.options.width) == cell.options._x) {
                 cells.push(cell)
             }
         })
         return cells
     }
 
+    agMarkAsActive() {
+        this.clear()
+        this.lineStyle(10, 0xb57fff, 1.0);
+        this.body_circle = new Phaser.Geom.Circle(this.options._x, this.options._y, this.options.height);
+        this.strokeCircleShape(this.body_circle);
+    }
+
     /*preUpdate(time, delta) {  
-        debugger
     }*/
 }
