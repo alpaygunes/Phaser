@@ -7,17 +7,23 @@ class PlayScene extends Phaser.Scene {
 
     table_size = { rows: 4, columns: 3 }
     target_cell;
-    level = 1;
+    level       = 1;
     cell_group;
     enemy_group;
     player;
-    sol_bosluk = 0;
-    top_bosluk = 0;
+    sol_bosluk  = 0;
+    top_bosluk  = 0;
     game_status = 'stop'; // play | stop
     firstClickTime = 0
-    enemies = [];
-    enemy_count = 10
+    enemies     = [];
+    enemy_count = 1
     flares;
+    sound_loss;
+    sound_full_cell;
+    sound_walk;
+    cell_body_border_size       = 1
+    cell_body_border_color      = '0x047b7c'
+    cell_body_border_next_color = '0xb57fff'
 
     constructor() {
         super(configPlayScene)
@@ -25,9 +31,24 @@ class PlayScene extends Phaser.Scene {
 
     preload() {
         this.load.atlas('flares', 'assets/flares.png', 'assets/flares.json');
+        this.load.audio('loss', 'assets/audio/loss.mp3');
+        this.load.audio('full_cell', 'assets/audio/full_cell.mp3');
+        this.load.audio('walk', 'assets/audio/walk.mp3');
     }
 
     create() {
+        this.sound_loss = this.sound.add('loss');
+        this.sound_full_cell = this.sound.add('full_cell');
+        this.sound_walk = this.sound.add('walk', {
+            mute: false,
+            volume: 0.01,
+            rate: 1,
+            detune: 0,
+            seek: 0,
+            loop: true,
+            delay: 0
+        });
+
         this.cell_group = this.add.group();
         this.enemy_group = this.add.group();
         this.addCells();
@@ -37,9 +58,12 @@ class PlayScene extends Phaser.Scene {
     update() {
         if (this.game_status == 'play') {
             this.enemy_group.children.each(function (enemy) {
-                if(enemy.current_cell === this.player.current_cell){
+                if (enemy.current_cell === this.player.current_cell) {
                     if (Phaser.Geom.Intersects.CircleToCircle(enemy.body_circle, this.player.body_circle)) {
                         console.log("-----  TEMAS  ---")
+                        this.game_status = 'stop'
+                        this.sound_loss.play();
+                        this.sound_walk.stop();
                     }
                 }
             }.bind(this))
@@ -71,7 +95,8 @@ class PlayScene extends Phaser.Scene {
                 let enemy = new Enemy(this, options).agCreate()
                 let cell = this.cell_group.getChildren()[random_cell]
                 enemy.orbital_path = cell.getOrbitalPath(enemy.name, 180)
-                enemy.current_cell = cell
+                enemy.current_cell = cell 
+                enemy.setDepth((999-index))
                 this.add.existing(enemy)
                 this.enemy_group.add(enemy);
             }, Math.random() * 200 * this.enemy_count);
@@ -82,9 +107,14 @@ class PlayScene extends Phaser.Scene {
 
     // game start
     startPlay() {
-        this.addPlayer();
+        this.resetAll();
+        if (!this.player) {
+            this.addPlayer();
+        }
         this.player.orbital_path = this.target_cell.getOrbitalPath(this.player.name, 180)
         this.player.current_cell = this.target_cell
+        this.target_cell.agMarkAsActive();
+        this.sound_walk.play();
     }
 
     // -------------------------------------  create cells 
@@ -117,16 +147,17 @@ class PlayScene extends Phaser.Scene {
             width: parseInt(cell_w.toFixed(0)) / 2,
             height: parseInt(cell_h.toFixed(0)) / 2,
             lineStyle: {
-                width: 2,
-                color: 0xDCE2AA,
+                width: this.cell_body_border_size,
+                color: this.cell_body_border_color,
                 alpha: 1
             },
             fillStyle: {
                 color: 0x9FB798,
                 alpha: 1
             },
-            add: true
-        }
+            add: true,
+            cell_body_border_next_color:this.cell_body_border_next_color
+        } 
 
         let cell_count = this.table_size.columns * this.table_size.rows
         let cells = []
@@ -183,7 +214,7 @@ class PlayScene extends Phaser.Scene {
 
     }
 
-    // ------------------------------------- Add Player
+    // -------------------------------------  Add Player
     addPlayer() {
         let options = {
             x: 0,
@@ -203,7 +234,24 @@ class PlayScene extends Phaser.Scene {
         }
 
         this.player = new Player(this, options).agCreate()
+        this.player.setDepth(999)
         this.add.existing(this.player)
         //this.cell_group.add(this.player); 
+    }
+
+    //-------------------------------------   resetAll
+    resetAll() {
+        if (this.player) {
+            this.player.cember_turlama_parcalari.splice(0, this.player.cember_turlama_parcalari.length)
+            this.player.cember_turlama_parcalari.length = 0
+            this.player.cember_turlama_bitis_indexi     = 0;
+            this.player.cember_turu_tamam               = false; 
+        }
+
+        this.cell_group.children.each((cell) => {
+            if(!cell.turu_tamam){
+                cell.txt.text = null
+            }
+        })
     }
 }

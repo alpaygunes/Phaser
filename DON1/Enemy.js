@@ -6,7 +6,7 @@ class Enemy extends Phaser.GameObjects.Graphics {
     orbital;
     follower;
     body_circle;
-    sensitivity = 0.009;
+    sensitivity = 0.002;
     speed = 500; //  = 1/ms  
     count = 9999999999999;
     name;

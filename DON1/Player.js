@@ -12,8 +12,7 @@ class Player extends Phaser.GameObjects.Graphics {
     name;
     orbital_path;
     cember_turlama_parcalari = []
-    cember_turlama_bitis_indexi = 0;
-    cember_turu_tamam = false;
+    cember_turlama_bitis_indexi = 0; 
     particles;
 
     constructor(scene, options) {
@@ -38,11 +37,12 @@ class Player extends Phaser.GameObjects.Graphics {
             bounce: 0.1,   
             blendMode: 'ADD'
         });
-        this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
+        this.follower = { t: 0, vec: new Phaser.Math.Vector2() };  
         return this;
     }
 
     preUpdate(time, delta) {
+        if(this.scene.game_status == 'stop')return;
         if (this.hareket_yonu == '+') {
             this.count += (1 / this.speed)
         } else {
@@ -57,9 +57,13 @@ class Player extends Phaser.GameObjects.Graphics {
         this.body_circle = new Phaser.Geom.Circle(x, y, this.options.height);
         this.fillCircleShape(this.body_circle);
         this.changeCell();
-        this.tarananCemberMiktariniHesapla()
-        this.particles.x = x
-        this.particles.y = y
+        if (!this.current_cell.turu_tamam){
+            this.tarananCemberMiktariniHesapla()
+        };
+        
+        // şimdilik particleyi sahne dışında gösterelim gözükmesin
+        this.particles.x = -100 // orjinali  = x
+        this.particles.y = -100 // orjinali  = y
     }
 
     changeCell() {
@@ -96,12 +100,14 @@ class Player extends Phaser.GameObjects.Graphics {
                         }
  
                         // bir satır sonra önceki olacak. önceki hücreyi pasif olarak işaretleyelim agMarkAsActive olmasın
-                        this.current_cell.agUnMarkAsNext(); 
+                        this.current_cell.agUnMarkAsNext();  
+                        if(this.current_cell.turu_tamam == false){
+                            this.current_cell.txt.text      =  null;
+                        }
                         this.current_cell                       = cell
                         this.cember_turlama_parcalari.splice(0, this.cember_turlama_parcalari.length)
                         this.cember_turlama_parcalari.length    = 0
-                        this.cember_turlama_bitis_indexi        = 0;
-                        this.cember_turu_tamam                  = false; 
+                        this.cember_turlama_bitis_indexi        = 0; 
                         this.count                              = 99999999
                         this.switchMovement();
                         cell.agUnMarkAsNext();
@@ -118,25 +124,26 @@ class Player extends Phaser.GameObjects.Graphics {
         this.hareket_yonu = (this.hareket_yonu == '+') ? '-' : '+'
     }
 
-    tarananCemberMiktariniHesapla() {
-        let index = this.follower.t.toFixed(2) * 100
-
-        this.current_cell.txt.text = Object.keys(this.cember_turlama_parcalari).length
-
-        if (this.cember_turu_tamam)return;
+    tarananCemberMiktariniHesapla() { 
+        let index = this.follower.t.toFixed(2) * 100 
+        this.current_cell.txt.text = Object.keys(this.cember_turlama_parcalari).length  
 
         this.cember_turlama_parcalari[index] = this.follower.t.toFixed(2) 
         if (Object.keys(this.cember_turlama_parcalari).length == 101) {
-            if (index == this.cember_turlama_bitis_indexi) {// başa döndüyse  
+            if ((index == this.cember_turlama_bitis_indexi) 
+                    || ( index == 100 && this.cember_turlama_bitis_indexi == 0) ) {// başa döndüyse  
                 let odul = new Phaser.Geom.Circle(
                     this.current_cell.options._x
                     , this.current_cell.options._y
                     , this.current_cell.options.height / 2);
                 this.current_cell.fillStyle(0x123fff);
                 this.current_cell.fillCircleShape(odul);
-
-                this.cember_turu_tamam = true;
+                this.scene.sound_full_cell.play(); 
+                this.current_cell.txt.text      = 100; 
+                this.current_cell.txt.setDepth(this.current_cell.depth+1)
+                this.current_cell.turu_tamam    = true;
             }
         }
     }
+     
 }
