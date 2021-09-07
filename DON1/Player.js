@@ -129,7 +129,7 @@ class Player extends Phaser.GameObjects.Graphics {
         this.current_cell.txt.text = Object.keys(this.cember_turlama_parcalari).length  
 
         this.cember_turlama_parcalari[index] = this.follower.t.toFixed(2) 
-        if (Object.keys(this.cember_turlama_parcalari).length == 101) {
+        /*if (Object.keys(this.cember_turlama_parcalari).length == 101) {
             if ((index == this.cember_turlama_bitis_indexi) 
                     || ( index == 100 && this.cember_turlama_bitis_indexi == 0) ) {// başa döndüyse  
                 let odul = new Phaser.Geom.Circle(
@@ -143,6 +143,11 @@ class Player extends Phaser.GameObjects.Graphics {
                 this.current_cell.txt.setDepth(this.current_cell.depth+1)
                 this.current_cell.turu_tamam    = true;
             }
+        }*/
+
+        if(!this.current_cell.path_circles.length){
+            this.scene.sound_full_cell.play();
+            this.current_cell.turu_tamam    = true;
         }
     }
      

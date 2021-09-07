@@ -34,6 +34,8 @@ class PlayScene extends Phaser.Scene {
         this.load.audio('loss', 'assets/audio/loss.mp3');
         this.load.audio('full_cell', 'assets/audio/full_cell.mp3');
         this.load.audio('walk', 'assets/audio/walk.mp3');
+        this.load.image('circle', 'assets/circle.png');
+
     }
 
     create() {
@@ -68,40 +70,17 @@ class PlayScene extends Phaser.Scene {
                     }
                 }
             }.bind(this))
-        } // ----- end if  
+        } // ----- end if   
 
-        // ----------------------------------------- taranmış kısıma çember bırak
-        if (this.player?.current_cell?.turu_tamam) return;
-        if (!this.player?.follower.t) return;
-
-        let y2 = this.player.current_cell.options._y
-        let x2 = this.player.current_cell.options._x
-        let x1 = this.player.body_circle.x
-        let y1 = this.player.body_circle.y
-        let angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI
-
-        if(angle<0){
-            angle = Math.abs(angle) + 180
-        }
-        
-
-        if (!(angle.toFixed(0) % 7) || angle.toFixed(0) == 0) { 
-            let exist   = false
-            let id      =  angle.toFixed(0)
-            Phaser.Utils.Array.Each(this.player.current_cell.halkalar,(h)=>{
-                if(h.id == id){
-                    exist = true
-                    h.destroy()
+        // hücrenin path_circles circle sine değise destrol et circle
+        if (this.game_status == 'play') {
+            Phaser.Utils.Array.Each(this.player.current_cell.path_circles,(c)=>{
+                let bounds = c.getBounds()
+                if (Phaser.Geom.Intersects.CircleToRectangle(this.player.body_circle,bounds)) {
+                    Phaser.Utils.Array.Remove(this.player.current_cell.path_circles,c)
+                    c.destroy()
                 }
-            }) 
-            if(!exist){
-                let halka   = this.add.graphics()
-                halka.lineStyle(this.player.current_cell.options.lineStyle.width, this.player.current_cell.options.cell_body_border_next_color, 0.5);
-                let h   = new Phaser.Geom.Circle(this.player.body_circle.x, this.player.body_circle.y, 5) 
-                halka.strokeCircleShape(h);
-                halka.id    = id
-                Phaser.Utils.Array.Add(this.player.current_cell.halkalar,halka);
-            }
+            })
         }
     }// -------------------------------------------- END UPDATE
 

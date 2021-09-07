@@ -9,7 +9,7 @@ class Cell extends Phaser.GameObjects.Graphics {
     hit_area_shape;
     txt;
     turu_tamam = false
-    halkalar = []; 
+    path_circles = [];
 
     constructor(scene, options) {
         super(scene, options);
@@ -29,9 +29,7 @@ class Cell extends Phaser.GameObjects.Graphics {
         this.setInteractive(this.hit_area_shape, Phaser.Geom.Circle.Contains);
 
         this.txt = new MyText(this.scene, this.options._x, this.options._y, null, { color: '#DCE2AA' });
-
-
-
+        this.createPathCircles()
         return this;
     }
 
@@ -108,25 +106,16 @@ class Cell extends Phaser.GameObjects.Graphics {
         this.strokeCircleShape(this.body_circle);
     }
 
-    /*preUpdate(time, delta) {
-        if (this.turu_tamam) return;
-        if (!this.scene.player?.follower.t) return;
-        if (this.scene.player.current_cell !== this) return;
+    createPathCircles() {          
+        var path        = new Phaser.Curves.Ellipse(this.options._x, this.options._y, this.options.height) 
 
-        let y2 = this.options._y
-        let x2 = this.options._x
-        let x1 = this.scene.player.body_circle.x
-        let y1 = this.scene.player.body_circle.y
-        let angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI
-
-        angle = Math.abs(angle)
-
-        if (!(angle.toFixed(0) % 7) || angle.toFixed(0) == 0) {
-            this.lineStyle(this.options.lineStyle.width, this.options.cell_body_border_next_color, 0.5);
-            let point = new Phaser.Geom.Circle(this.scene.player.body_circle.x, this.scene.player.body_circle.y, 5)
-            point.id = (angle.toFixed(0) % 5)
-            this.strokeCircleShape(point); 
+        for (let i = 0; i <= 100; i+=3) {  
+            let point       = path.getPoint(i / 100)  
+            let path_circle = this.scene.add.sprite(point.x, point.y, 'circle');
+            path_circle.scale = 0.05 
+            path_circle.setAlpha(0.9)  
+            Phaser.Utils.Array.Add(this.path_circles, path_circle); 
         }
-
-    }*/
+    }
+ 
 }
