@@ -7,22 +7,22 @@ class PlayScene extends Phaser.Scene {
 
     table_size = { rows: 4, columns: 3 }
     target_cell;
-    level       = 1;
+    level = 1;
     cell_group;
     enemy_group;
     player;
-    sol_bosluk  = 0;
-    top_bosluk  = 0;
+    sol_bosluk = 0;
+    top_bosluk = 0;
     game_status = 'stop'; // play | stop
     firstClickTime = 0
-    enemies     = [];
+    enemies = [];
     enemy_count = 1
     flares;
     sound_loss;
     sound_full_cell;
     sound_walk;
-    cell_body_border_size       = 1
-    cell_body_border_color      = '0x047b7c'
+    cell_body_border_size = 1
+    cell_body_border_color = '0x047b7c'
     cell_body_border_next_color = '0xb57fff'
 
     constructor() {
@@ -56,6 +56,7 @@ class PlayScene extends Phaser.Scene {
     }
 
     update() {
+        // ------------------------------------------ player enemyye temeas ettimi ?
         if (this.game_status == 'play') {
             this.enemy_group.children.each(function (enemy) {
                 if (enemy.current_cell === this.player.current_cell) {
@@ -68,7 +69,45 @@ class PlayScene extends Phaser.Scene {
                 }
             }.bind(this))
         } // ----- end if  
-    }
+
+        // ----------------------------------------- taranmış kısıma çember bırak
+        if (this.player?.current_cell?.turu_tamam) return;
+        if (!this.player?.follower.t) return;
+
+        let y2 = this.player.current_cell.options._y
+        let x2 = this.player.current_cell.options._x
+        let x1 = this.player.body_circle.x
+        let y1 = this.player.body_circle.y
+        let angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI
+
+        if(angle<0){
+            angle = Math.abs(angle) + 180
+        }
+        
+
+        if (!(angle.toFixed(0) % 7) || angle.toFixed(0) == 0) { 
+            let exist   = false
+            let id      =  angle.toFixed(0)
+            Phaser.Utils.Array.Each(this.player.current_cell.halkalar,(h)=>{
+                if(h.id == id){
+                    exist = true
+                    h.destroy()
+                }
+            }) 
+            if(!exist){
+                let halka   = this.add.graphics()
+                halka.lineStyle(this.player.current_cell.options.lineStyle.width, this.player.current_cell.options.cell_body_border_next_color, 0.5);
+                let h   = new Phaser.Geom.Circle(this.player.body_circle.x, this.player.body_circle.y, 5) 
+                halka.strokeCircleShape(h);
+                halka.id    = id
+                Phaser.Utils.Array.Add(this.player.current_cell.halkalar,halka);
+            }
+        }
+    }// -------------------------------------------- END UPDATE
+
+
+
+
 
     //------------ add enemy
     addEnemies() {
@@ -95,8 +134,8 @@ class PlayScene extends Phaser.Scene {
                 let enemy = new Enemy(this, options).agCreate()
                 let cell = this.cell_group.getChildren()[random_cell]
                 enemy.orbital_path = cell.getOrbitalPath(enemy.name, 180)
-                enemy.current_cell = cell 
-                enemy.setDepth((999-index))
+                enemy.current_cell = cell
+                enemy.setDepth((999 - index))
                 this.add.existing(enemy)
                 this.enemy_group.add(enemy);
             }, Math.random() * 200 * this.enemy_count);
@@ -156,8 +195,8 @@ class PlayScene extends Phaser.Scene {
                 alpha: 1
             },
             add: true,
-            cell_body_border_next_color:this.cell_body_border_next_color
-        } 
+            cell_body_border_next_color: this.cell_body_border_next_color
+        }
 
         let cell_count = this.table_size.columns * this.table_size.rows
         let cells = []
@@ -244,12 +283,12 @@ class PlayScene extends Phaser.Scene {
         if (this.player) {
             this.player.cember_turlama_parcalari.splice(0, this.player.cember_turlama_parcalari.length)
             this.player.cember_turlama_parcalari.length = 0
-            this.player.cember_turlama_bitis_indexi     = 0;
-            this.player.cember_turu_tamam               = false; 
+            this.player.cember_turlama_bitis_indexi = 0;
+            this.player.cember_turu_tamam = false;
         }
 
         this.cell_group.children.each((cell) => {
-            if(!cell.turu_tamam){
+            if (!cell.turu_tamam) {
                 cell.txt.text = null
             }
         })
