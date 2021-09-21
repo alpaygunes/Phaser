@@ -5,7 +5,7 @@ var configPlayScene = {
 };
 class PlayScene extends Phaser.Scene {
 
-    table_size                  = { rows: 4, columns: 3 }
+    table_size                  = { rows: 1, columns: 1 }
     target_cell;
     level                       = 1;
     cell_group;
@@ -16,7 +16,7 @@ class PlayScene extends Phaser.Scene {
     game_status                 = 'stop'; // play | stop
     //firstClickTime            = 0
     enemies                     = [];
-    enemy_count                 = 2
+    enemy_count                 = 1
     flares;
     sound_loss;
     sound_full_cell;

@@ -1,0 +1,12 @@
+1 - hızlanma hücresi
+2 - kara delik
+3 - Tamamlanan satırın yok olması
+4 - Sabit olmayan ilerleyen board
+    Yukarıda oluşan yeni hücrelerde yeni düşmanların oluşması
+5 - Bazı hücrelerde salalan düşmanlar yada sabit hızla dönen hücreler
+6 - Her hücrenin merkezinde ödül olmamalı. Bazılarında olmalı.
+    Oyun sırasında rasgele çıkmalı.
+    Hızlandırma 
+    Puan
+    Bomba
+    vb.
