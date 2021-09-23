@@ -1,10 +1,10 @@
 'use strict'
 
-var configTrainerScene0 = {
-    key: 'TrainerScene0'
+var configScene = {
+    key: 'Scene'
 };
 
-class TrainerScene0 extends Phaser.Scene {
+class Scene extends Phaser.Scene {
 
     table_size      = { rows: 2, columns: 2 }
     txt_directive   = null;
@@ -13,7 +13,7 @@ class TrainerScene0 extends Phaser.Scene {
     
 
     constructor() {
-        super(configTrainerScene0)
+        super(configScene)
     }
  
 
