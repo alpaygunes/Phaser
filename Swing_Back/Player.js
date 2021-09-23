@@ -1,6 +1,6 @@
 'use strict'
 
-class Player extends Circle {
+class Player extends ICircle {
     constructor(scene, options) {
         super(scene, options);
         this.name = 'Player_' + (Math.random() + 1).toString(36).substring(7);

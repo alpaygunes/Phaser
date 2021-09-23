@@ -1,6 +1,6 @@
 'use strict'
 
-class Circle extends Phaser.GameObjects.Graphics {
+class ICircle extends Phaser.GameObjects.Graphics {
 
     hit_area;
     cell;
