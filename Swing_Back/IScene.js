@@ -81,8 +81,7 @@ class IScene extends Phaser.Scene {
 
     addEventListenerToCells() {
         this.input.on('gameobjectdown', (pointer, cell, event) => {
-            if (!(cell instanceof Cell)) return;
-
+            if (!(cell instanceof Cell)) return; 
             // yönü değiştir 
             if (this.player != null && this.player.cell == cell) {
                 this.player.switchMovement();

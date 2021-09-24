@@ -2,33 +2,47 @@
 
 class Cell extends Phaser.GameObjects.Graphics {
 
-    name;
-    outline;
-    inline;
-    orbital;
-    hit_area;
-    is_next_cell  = false
+    name                    ;
+    outline                 ;
+    inline                  ;
+    orbital                 ;
+    hit_area                ;
+    is_next_cell    = false ;
+    visibility      = true  ;
 
     constructor(scene, options) {
         super(scene, options); 
         this.options    = options
-        this.name       = (Math.random() + 1).toString(36).substring(7); 
-        this.addHitArea();
-        this.addOutLine();
-        this.addInLine();
-        this.addOrbital();
+        this.name       = (Math.random() + 1).toString(36).substring(7);  
         scene.events.on('unmark_all_as_next', ()=>{ 
             this.unMarkAsNext()
         });
         this.setX(0)
         this.setY(0)
         scene.add.existing(this);
+        this.draw()
+
+        setInterval(() => {
+            this.removeInteractive() 
+        }, 500);
+    }
+
+    draw(){
+        this.addHitArea();
+        this.addOutLine();
+        this.addInLine();
+        this.addOrbital();
     }
 
     addHitArea(){ 
+        if(this.is_next_cell){
+            this.fillStyle('0xffffff', 1.0);
+        }else{
+            this.fillStyle('0x9FB798', 1.0);
+        }
         this.hit_area   = new Phaser.Geom.Circle(this.options.x, this.options.y, this.options.radius);
-        this.fillCircleShape(this.hit_area);
-        this.setInteractive(this.hit_area, Phaser.Geom.Circle.Contains); 
+        this.fillCircleShape(this.hit_area);   
+        this.setInteractive(this.hit_area, Phaser.Geom.Circle.Contains);  
     }
 
     addOutLine(){ 
@@ -62,9 +76,22 @@ class Cell extends Phaser.GameObjects.Graphics {
             path = new Phaser.Curves.Ellipse(this.options.x, this.options.y, this.options.radius)
             path.angle  = angle;
             path.name   = name;
-            this.orbital.add(path); 
+            this.orbital.add(path);
         }
         return path
+    }
+
+    setVisible(visibility){
+        this.visibility = visibility
+        if(!visibility){
+            this.clear(); 
+            this.orbital    = null
+            this.outline    = null
+            this.inline     = null
+            this.hit_area   = null
+        }else{
+            this.draw();
+        }
     }
 
     unMarkAsNext(){
@@ -87,6 +114,15 @@ class Cell extends Phaser.GameObjects.Graphics {
         this.addOutLine();
         this.addInLine();  
         this.fillStyle('0x9FB798', 1.0);
+    }
+
+    preUpdate(time, delta) { 
+        this.clear();  
+        this.options.y -= 0.1;
+        if(this.scene.player?.cell == this){
+            this.scene.player.orbital = this.setOrbitalPath(this.scene.player.name, this.scene.player.orbital.angle);
+        }
+        this.draw();
     }
 
 }

@@ -6,7 +6,7 @@ var configTrainerScene0 = {
 
 class TrainerScene0 extends IScene {
 
-    table_size = { rows: 2, columns: 2 }
+    table_size = { rows: 10, columns: 5 }
     directive_count = 0;
     player_speed = 300;//ms
     constructor() {
@@ -25,20 +25,21 @@ class TrainerScene0 extends IScene {
         this.input.on('gameobjectdown', (pointer, cell, event) => { 
             if (!(cell instanceof Cell)) return;
             this.txt_directive.text = "";
+            
             if (this.directive_count == 0) {
                 setTimeout(() => {
                     this.txt_directive.text = "Komşu hücreye tıklayın"; 
-                    this.directive_count++;
-                }, 2000);
+                    this.directive_count++;  
+                }, 3000);
             } else if (this.directive_count == 1) {
                 setTimeout(() => {
                     this.txt_directive.text = "Aynı hücreye tıklayın";
-                    this.directive_count++;
+                    this.directive_count++; 
                 }, 2000);
             } else if (this.directive_count == 2) {
                 setTimeout(() => {
                     this.txt_directive.text = "Bütün ödülleri toplayın";
-                    this.directive_count++;
+                    this.directive_count++; 
                 }, 1000);
             } else if (this.directive_count == 3) {
                 setTimeout(() => {

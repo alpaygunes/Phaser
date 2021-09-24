@@ -8,7 +8,7 @@ class Player extends ICircle {
 
     changeCellIsItPossible() {
         this.scene.cell_group.children.each(function (cell) {
-            if (cell.name != this.cell.name) {
+            if (cell.name != this.cell.name && cell.visibility) {
                 if (Phaser.Geom.Intersects.CircleToCircle(this.center_point, cell.hit_area)) {
                     let intersec_points = Phaser.Geom.Intersects.GetCircleToCircle(this.center_point, cell.hit_area)
                     if (cell.is_next_cell) { 
