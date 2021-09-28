@@ -17,8 +17,8 @@ class Player extends Phaser.GameObjects.Graphics {
 
     constructor(scene, options) {
         super(scene, options);
-        this.options = options
-        this.name = (Math.random() + 1).toString(36).substring(7);
+        this.options    = options
+        this.name       = (Math.random() + 1).toString(36).substring(7);
         // ...
         //scene.add.existing(this);
 

@@ -2,15 +2,35 @@
 
 class IScene extends Phaser.Scene {
 
-    table_size;
-    player = null;
-    cell_group;
+    table_size          ;
+    player      = null  ;
+    enemy_group         ;
+    enemy_count = 1     ;
+    cell_group          ;
+    top_offset          ;
+    screenCenterX       ;
+    screenCenterY       ;
+    slide      = null   ; // up down left right
+
+
+    Initial() {
+        this.screenCenterX = this.cameras.main.width / 2;
+        this.screenCenterY = this.cameras.main.height / 5;
+    }
+
+
+    preload(){ 
+        this.Initial();
+        this.load.image('circle', 'assets/images/circle.png');
+        this.load.image('enemy',  'assets/images/enemy.png');
+        this.load.image('player', 'assets/images/player.png');
+        this.load.image('diamond','assets/images/diamond.png');
+    }
 
     addCells() {
 
-        let left_right_margin = 0.1;
-        let top_bottom_margin = 0.1;
-        let top_offset = 0.15;
+        let left_right_margin = 0.01;
+        let top_bottom_margin = 0.01;
         let screen_w = this.cameras.main.width;
         let screen_h = this.cameras.main.height;
         let grup_w = screen_w * (1 - left_right_margin)
@@ -47,8 +67,11 @@ class IScene extends Phaser.Scene {
             options.x = parseInt(options.x.toFixed(0)) + (screen_w - (radius * this.table_size.columns)) / 2
             options.y = ((2 * row_index - 1) * options.radius)
             options.y = parseInt(options.y.toFixed(0)) + (screen_h - (radius * this.table_size.rows)) / 2
-            options.y += screen_h * top_offset
-            let cell = new Cell(this, Object.assign({}, options));
+            options.y += screen_h * this.top_offset
+            let options_ = Object.assign({}, options)
+            let cell = new ICellSprite({ scene: this, texture: 'circle', options: options_ });
+            cell.setInteractive()
+            this.add.existing(cell);
             this.cell_group.add(cell);
         }
     }
@@ -70,29 +93,58 @@ class IScene extends Phaser.Scene {
                 },
                 add: true,
             }
-            this.player = new Player(this, Object.assign({}, options));
+            let options_ = Object.assign({}, options)
+            this.player = new Player({ scene: this, texture: 'player', options: options_ });
             this.player.setDepth(999);
             this.player.cell = cell;
-            this.player.orbital = cell.setOrbitalPath(this.player.name, 180);
+            this.player.orbital = cell.setOrbitalPath(180);
             this.player.setDepth(999)
-            this.add.existing(this.player); 
+            this.add.existing(this.player);
         }
+    }
+
+    addEnemy(cell) {
+        let options = {
+            x: 0,
+            y: 0,
+            radius: 10,
+            fillStyle: {
+                color: 0xff9999,
+                alpha: 1
+            },
+            lineStyle: {
+                width: 2,
+                color: 0x003F91,
+                alpha: 1
+            },
+            add: true,
+        }
+        let options_ = Object.assign({}, options)
+        this.enemy = new Enemy({ scene: this, texture: 'enemy', options: options_ });
+        this.enemy.setDepth(999);
+        this.enemy.cell = cell;
+        this.enemy.orbital = cell.setOrbitalPath(180);
+        this.enemy.setDepth(999)
+        this.add.existing(this.enemy);
+        return this.enemy
+
     }
 
     addEventListenerToCells() {
         this.input.on('gameobjectdown', (pointer, cell, event) => {
-            //if (!(cell instanceof Cell)) return; 
+            if (!(cell instanceof ICellSprite)) return;
             // yönü değiştir 
             if (this.player != null && this.player.cell == cell) {
                 this.player.switchMovement();
             }
 
             //sonraki olarak işaretlemeden önce işaretli olanın işaretini kaldır
-            if (this.player != null && this.player.cell != cell ) {
+            if (this.player != null && this.player.cell != cell) {
                 this.events.emit('unmark_all_as_next')
                 cell.markAsNext();
-            } 
+            }
         })
     }
+
 
 }

@@ -6,11 +6,15 @@ var configTrainerScene0 = {
 
 class TrainerScene0 extends IScene {
 
-    table_size = { rows: 10, columns: 5 }
+    table_size = { rows: 2, columns: 2 }
     directive_count = 0;
     player_speed = 300;//ms
     constructor() {
         super(configTrainerScene0)
+    }
+
+    preload(){ 
+        this.load.image('circle', 'assets/images/circle.png');
     }
 
     create() {
@@ -23,9 +27,9 @@ class TrainerScene0 extends IScene {
 
     addEventListenerToOwnCells() {
         this.input.on('gameobjectdown', (pointer, cell, event) => { 
-            if (!(cell instanceof Cell)) return;
+            //if (!(cell instanceof Cell)) return;
             this.txt_directive.text = "";
-            
+            debugger
             if (this.directive_count == 0) {
                 setTimeout(() => {
                     this.txt_directive.text = "Komşu hücreye tıklayın"; 
