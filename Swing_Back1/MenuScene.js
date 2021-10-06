@@ -8,7 +8,9 @@ class MenuScene extends Phaser.Scene {
         super(configMenuScene)
     }
 
-    preload() { }
+    preload() {
+        
+    }
 
     create() {
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width  / 2;

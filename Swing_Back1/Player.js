@@ -4,6 +4,17 @@ class Player extends IPlayerSprite {
     constructor(scene, options) {
         super(scene, options);
         this.name = 'Player_' + (Math.random() + 1).toString(36).substring(7);
+        scene.scene.sound_walk.play();
+    }
+
+    isIntersecToReward(){
+        Phaser.Utils.Array.Each(this.cell.revards,(revard)=>{
+            if (Phaser.Geom.Intersects.RectangleToRectangle(this.scene.player.getBounds(), revard.getBounds())) {
+                Phaser.Utils.Array.Remove(this.cell.revards,revard)
+                revard.destroy() 
+                this.scene.sound_yut.play();
+            }
+        })
     }
 
     changeCellIsItPossible() {
@@ -23,4 +34,28 @@ class Player extends IPlayerSprite {
             }
         }, this)
     }
+
+    preUpdate(time, delta) {  
+        this.isIntersecToReward(); 
+        if (this.hareket_yonu == '+') {
+            this.count += (1 / this.speed)
+        } else {
+            this.count -= (1 / this.speed)
+        }
+
+        this.follower.t = this.count % 1
+        this.orbital.getPoint(this.follower.t, this.follower.vec);
+        this.x          = this.follower.vec.x;
+        this.y          = this.follower.vec.y;
+        
+        if (Math.abs(this.follower.t) >= 0.125 && Math.abs(this.follower.t) <= 0.130) {
+            this.can_pass = true;
+        }
+        
+        this.changeCellIsItPossible(); 
+        if(this.scene.slide != null){
+            this.orbital     = this.cell.setOrbitalPath(this.orbital.angle) 
+        } 
+    }
+    
 }

@@ -11,13 +11,15 @@ class IScene extends Phaser.Scene {
     screenCenterX       ;
     screenCenterY       ;
     slide      = null   ; // up down left right
+    sound_loss          ;
+    sound_full_cell     ;
+    sound_walk          ;
 
 
     Initial() {
         this.screenCenterX = this.cameras.main.width / 2;
         this.screenCenterY = this.cameras.main.height / 5;
-    }
-
+    }  
 
     preload(){ 
         this.Initial();
@@ -25,6 +27,12 @@ class IScene extends Phaser.Scene {
         this.load.image('enemy',  'assets/images/enemy.png');
         this.load.image('player', 'assets/images/player.png');
         this.load.image('diamond','assets/images/diamond.png');
+        this.load.image('vagon','assets/images/player.png');
+
+        this.load.audio('loss', 'assets/audio/loss.mp3');
+        this.load.audio('full_cell', 'assets/audio/full_cell.mp3');
+        this.load.audio('walk', 'assets/audio/walk.mp3');
+        this.load.audio('yut', 'assets/audio/yut.mp3');
     }
 
     addCells() {
@@ -71,6 +79,7 @@ class IScene extends Phaser.Scene {
             let options_ = Object.assign({}, options)
             let cell = new ICellSprite({ scene: this, texture: 'circle', options: options_ });
             cell.setInteractive()
+            cell.id  = index
             this.add.existing(cell);
             this.cell_group.add(cell);
         }
@@ -81,7 +90,7 @@ class IScene extends Phaser.Scene {
             let options = {
                 x: 0,
                 y: 0,
-                radius: 10,
+                radius: 5,
                 fillStyle: {
                     color: 0xff9999,
                     alpha: 1
@@ -107,7 +116,7 @@ class IScene extends Phaser.Scene {
         let options = {
             x: 0,
             y: 0,
-            radius: 10,
+            radius: 5,
             fillStyle: {
                 color: 0xff9999,
                 alpha: 1
@@ -119,14 +128,14 @@ class IScene extends Phaser.Scene {
             },
             add: true,
         }
-        let options_ = Object.assign({}, options)
-        this.enemy = new Enemy({ scene: this, texture: 'enemy', options: options_ });
+        let options_        = Object.assign({}, options);
+        this.enemy          = new Enemy({ scene: this, texture: 'enemy', options: options_ });
         this.enemy.setDepth(999);
-        this.enemy.cell = cell;
-        this.enemy.orbital = cell.setOrbitalPath(180);
-        this.enemy.setDepth(999)
+        this.enemy.cell     = cell;
+        this.enemy.orbital  = cell.setOrbitalPath(-90);
+        this.enemy.setDepth(999);
         this.add.existing(this.enemy);
-        return this.enemy
+        return this.enemy;
 
     }
 

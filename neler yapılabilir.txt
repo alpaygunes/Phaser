@@ -1,0 +1,4 @@
+1 - hızlanma hücresi
+2 - kara delik
+3 - Karşıdan karşına geçirme
+4 - Peşine düşman takıp tazağa düşürme

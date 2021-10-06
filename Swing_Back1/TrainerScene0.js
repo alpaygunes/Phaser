@@ -19,7 +19,22 @@ class TrainerScene0 extends IScene {
 
  
 
-    create() {  
+    create() {   
+        this.sound_yut          = this.sound.add('yut');
+        this.sound_walk         = this.sound.add('walk', {
+            mute: false,
+            volume: 0.01,
+            rate: 1,
+            detune: 0,
+            seek: 0,
+            loop: true,
+            delay: 0
+        });
+ 
+        this.events.on('destroy', ()=>{  
+            this.sound_walk.stop();
+        });
+
         this.cell_group = this.add.group();
         this.addCells(); 
         this.addEventListenerToCells();
