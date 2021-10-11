@@ -12,7 +12,7 @@ class IPlayerSprite extends Phaser.GameObjects.Sprite {
     count           = 0;
     speed           = 50; //  = 1/ms  
     hareket_yonu    = '+';
-    follower        ;
+    follower        ; 
 
     constructor(config) {
         super(config.scene, config.options.x, config.options.y, config.texture);

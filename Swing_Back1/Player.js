@@ -1,10 +1,14 @@
 'use strict'
 
 class Player extends IPlayerSprite {
+
+    tails       = [];
+    path_points = [];
+
     constructor(scene, options) {
         super(scene, options);
         this.name = 'Player_' + (Math.random() + 1).toString(36).substring(7);
-        scene.scene.sound_walk.play();
+        this.scene.sound_walk.play();
     }
 
     isIntersecToReward(){
@@ -13,8 +17,29 @@ class Player extends IPlayerSprite {
                 Phaser.Utils.Array.Remove(this.cell.revards,revard)
                 revard.destroy() 
                 this.scene.sound_yut.play();
+                if(!this.cell.revards.length){
+                    this.addNewToTail()
+                }
             }
         })
+    }
+
+    addNewToTail(){
+        let options = {
+            x: this.x,
+            y: this.y,
+            radius: 5,
+            fillStyle: {
+                color: 0xff9999,
+                alpha: 1
+            } 
+        }
+        let options_ = Object.assign({}, options)  
+        let tail     = new ITailSprite({ scene: this.scene, texture: 'tail', options: options_ }); 
+        tail.player  = this
+        tail.setDepth(this.depth+999) 
+        Phaser.Utils.Array.Add(this.tails, tail); 
+        this.scene.add.existing(tail);
     }
 
     changeCellIsItPossible() {
@@ -34,9 +59,20 @@ class Player extends IPlayerSprite {
             }
         }, this)
     }
+    
+    fallowedTails(){
+        if(!this.tails.length) return;
+        let i   = 8;
+        Phaser.Utils.Array.Each(this.tails,(tail)=>{  
+            tail.x = this.path_points[i].x 
+            tail.y = this.path_points[i].y  
+            i      += 8;
+        })
+    }
 
     preUpdate(time, delta) {  
         this.isIntersecToReward(); 
+        this.fallowedTails();
         if (this.hareket_yonu == '+') {
             this.count += (1 / this.speed)
         } else {
@@ -47,7 +83,22 @@ class Player extends IPlayerSprite {
         this.orbital.getPoint(this.follower.t, this.follower.vec);
         this.x          = this.follower.vec.x;
         this.y          = this.follower.vec.y;
-        
+
+ 
+         
+        Phaser.Utils.Array.AddAt(this.path_points,new Phaser.Geom.Point(this.x,this.y),0) 
+        if(this.path_points.length>200){
+            this.path_points.splice(-1);
+        }
+
+        if(this.scene.slide){ 
+            Phaser.Utils.Array.Each(this.path_points,(path_point)=>{   
+                path_point.y += this.cell.slide_speed   
+            })
+        }
+
+ 
+         
         if (Math.abs(this.follower.t) >= 0.125 && Math.abs(this.follower.t) <= 0.130) {
             this.can_pass = true;
         }

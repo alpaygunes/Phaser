@@ -6,7 +6,7 @@ var configPlayScene = {
 
 class PlayScene extends IScene {
 
-    table_size      = { rows: 3, columns: 3 } 
+    table_size      = { rows: 1, columns: 3 } 
     player_speed    = 300   ;//ms 
     enemy_speed     = 300   ;//ms 
     top_offset      = 0     ;
@@ -30,7 +30,7 @@ class PlayScene extends IScene {
             delay: 0
         });
 
-        this.slide          = null
+        this.slide          = 'up'
         this.cell_group     = this.add.group();
         this.enemy_group    = this.add.group();
         this.addCells(); 

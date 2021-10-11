@@ -28,6 +28,7 @@ class IScene extends Phaser.Scene {
         this.load.image('player', 'assets/images/player.png');
         this.load.image('diamond','assets/images/diamond.png');
         this.load.image('vagon','assets/images/player.png');
+        this.load.image('tail','assets/images/player.png');
 
         this.load.audio('loss', 'assets/audio/loss.mp3');
         this.load.audio('full_cell', 'assets/audio/full_cell.mp3');
@@ -37,12 +38,12 @@ class IScene extends Phaser.Scene {
 
     addCells() {
 
-        let left_right_margin = 0.01;
-        let top_bottom_margin = 0.01;
-        let screen_w = this.cameras.main.width;
-        let screen_h = this.cameras.main.height;
-        let grup_w = screen_w * (1 - left_right_margin)
-        let grup_h = screen_h * (1 - top_bottom_margin)
+        let left_right_margin   = 0.01;
+        let top_bottom_margin   = 0.01;
+        let screen_w            = this.cameras.main.width;
+        let screen_h            = this.cameras.main.height;
+        let grup_w              = screen_w * (1 - left_right_margin)
+        let grup_h              = screen_h * (1 - top_bottom_margin)
         let radius;
 
         radius = (grup_w / this.table_size.columns)
@@ -138,6 +139,8 @@ class IScene extends Phaser.Scene {
         return this.enemy;
 
     }
+
+ 
 
     addEventListenerToCells() {
         this.input.on('gameobjectdown', (pointer, cell, event) => {
