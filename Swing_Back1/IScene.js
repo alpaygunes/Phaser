@@ -2,33 +2,33 @@
 
 class IScene extends Phaser.Scene {
 
-    table_size          ;
-    player      = null  ;
-    enemy_group         ;
-    enemy_count = 1     ;
-    cell_group          ;
-    top_offset          ;
-    screenCenterX       ;
-    screenCenterY       ;
-    slide      = null   ; // up down left right
-    sound_loss          ;
-    sound_full_cell     ;
-    sound_walk          ;
+    table_size;
+    player = null;
+    enemy_group;
+    enemy_count = 1;
+    cell_group;
+    top_offset;
+    screenCenterX;
+    screenCenterY;
+    slide = null; // up down left right
+    sound_loss;
+    sound_full_cell;
+    sound_walk;
 
 
     Initial() {
         this.screenCenterX = this.cameras.main.width / 2;
         this.screenCenterY = this.cameras.main.height / 5;
-    }  
+    }
 
-    preload(){ 
+    preload() {
         this.Initial();
         this.load.image('circle', 'assets/images/circle.png');
-        this.load.image('enemy',  'assets/images/enemy.png');
+        this.load.image('enemy', 'assets/images/enemy.png');
         this.load.image('player', 'assets/images/player.png');
-        this.load.image('diamond','assets/images/diamond.png');
-        this.load.image('vagon','assets/images/player.png');
-        this.load.image('tail','assets/images/player.png');
+        this.load.image('diamond', 'assets/images/diamond.png');
+        this.load.image('vagon', 'assets/images/player.png');
+        this.load.image('tail', 'assets/images/player.png');
 
         this.load.audio('loss', 'assets/audio/loss.mp3');
         this.load.audio('full_cell', 'assets/audio/full_cell.mp3');
@@ -38,12 +38,12 @@ class IScene extends Phaser.Scene {
 
     addCells() {
 
-        let left_right_margin   = 0.01;
-        let top_bottom_margin   = 0.01;
-        let screen_w            = this.cameras.main.width;
-        let screen_h            = this.cameras.main.height;
-        let grup_w              = screen_w * (1 - left_right_margin)
-        let grup_h              = screen_h * (1 - top_bottom_margin)
+        let left_right_margin = 0.01;
+        let top_bottom_margin = 0.01;
+        let screen_w = this.cameras.main.width;
+        let screen_h = this.cameras.main.height;
+        let grup_w = screen_w * (1 - left_right_margin)
+        let grup_h = screen_h * (1 - top_bottom_margin)
         let radius;
 
         radius = (grup_w / this.table_size.columns)
@@ -80,7 +80,7 @@ class IScene extends Phaser.Scene {
             let options_ = Object.assign({}, options)
             let cell = new ICellSprite({ scene: this, texture: 'circle', options: options_ });
             cell.setInteractive()
-            cell.id  = index
+            cell.id = index
             this.add.existing(cell);
             this.cell_group.add(cell);
         }
@@ -129,19 +129,17 @@ class IScene extends Phaser.Scene {
             },
             add: true,
         }
-        let options_        = Object.assign({}, options);
-        this.enemy          = new Enemy({ scene: this, texture: 'enemy', options: options_ });
+        let options_ = Object.assign({}, options);
+        this.enemy = new Enemy({ scene: this, texture: 'enemy', options: options_ });
         this.enemy.setDepth(999);
-        this.enemy.cell     = cell;
-        this.enemy.orbital  = cell.setOrbitalPath(-90);
+        this.enemy.cell = cell;
+        this.enemy.orbital = cell.setOrbitalPath(-90);
         this.enemy.setDepth(999);
         this.add.existing(this.enemy);
         return this.enemy;
 
     }
-
  
-
     addEventListenerToCells() {
         this.input.on('gameobjectdown', (pointer, cell, event) => {
             if (!(cell instanceof ICellSprite)) return;

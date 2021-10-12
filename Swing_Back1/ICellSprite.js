@@ -68,15 +68,10 @@ class ICellSprite extends Phaser.GameObjects.Sprite {
         }
     }
 
-    destroyIfOutOfArea() {
-        if (this.y > (this.scene.cameras.main.height - this.options.radius)) {
-            console.log("Kendini yok ettme noktası");
-        }
-    }
+
 
     preUpdate(time, delta) {
-        if (this.scene.slide == 'up') {
-            this.destroyIfOutOfArea()
+        if (this.scene.slide == 'up') { 
             this.y += this.slide_speed;
             this.options.y += this.slide_speed;
 
