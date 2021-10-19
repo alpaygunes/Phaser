@@ -14,6 +14,7 @@ class IScene extends Phaser.Scene {
     sound_loss;
     sound_full_cell;
     sound_walk;
+    stop = false ;  
 
 
     Initial() {
@@ -41,9 +42,9 @@ class IScene extends Phaser.Scene {
         let left_right_margin = 0.01;
         let top_bottom_margin = 0.01;
         let screen_w = this.cameras.main.width;
-        let screen_h = this.cameras.main.height;
+        let screen_h = this.cameras.main.height  ;
         let grup_w = screen_w * (1 - left_right_margin)
-        let grup_h = screen_h * (1 - top_bottom_margin)
+        let grup_h = screen_h * (1 - top_bottom_margin)- this.top_offset
         let radius;
 
         radius = (grup_w / this.table_size.columns)
@@ -76,7 +77,7 @@ class IScene extends Phaser.Scene {
             options.x = parseInt(options.x.toFixed(0)) + (screen_w - (radius * this.table_size.columns)) / 2
             options.y = ((2 * row_index - 1) * options.radius)
             options.y = parseInt(options.y.toFixed(0)) + (screen_h - (radius * this.table_size.rows)) / 2
-            options.y += screen_h * this.top_offset
+            options.y +=  this.top_offset
             let options_ = Object.assign({}, options)
             let cell = new ICellSprite({ scene: this, texture: 'circle', options: options_ });
             cell.setInteractive()
@@ -119,12 +120,12 @@ class IScene extends Phaser.Scene {
             y: 0,
             radius: 5,
             fillStyle: {
-                color: 0xff9999,
+                color: 0xff0000,
                 alpha: 1
             },
             lineStyle: {
                 width: 2,
-                color: 0x003F91,
+                color: 0x000000,
                 alpha: 1
             },
             add: true,

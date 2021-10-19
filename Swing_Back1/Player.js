@@ -62,15 +62,17 @@ class Player extends IPlayerSprite {
     
     fallowedTails(){
         if(!this.tails.length) return;
-        let i   = 8;
+        const aralik = 0.03*this.speed
+        let i   = aralik;
         Phaser.Utils.Array.Each(this.tails,(tail)=>{  
             tail.x = this.path_points[i].x 
             tail.y = this.path_points[i].y  
-            i      += 8;
+            i      += aralik;
         })
     }
 
     preUpdate(time, delta) {  
+        if(this.stop) return;
         this.isIntersecToReward(); 
         this.fallowedTails();
         if (this.hareket_yonu == '+') {
@@ -87,7 +89,7 @@ class Player extends IPlayerSprite {
  
          
         Phaser.Utils.Array.AddAt(this.path_points,new Phaser.Geom.Point(this.x,this.y),0) 
-        if(this.path_points.length>200){
+        if(this.path_points.length>1000){
             this.path_points.splice(-1);
         }
 

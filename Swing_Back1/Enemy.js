@@ -2,8 +2,8 @@
 
 class Enemy extends IPlayerSprite {
 
-    can_pass    = false
-    movement_type  = null
+    can_pass        = false
+    movement_type   = null
 
     constructor(scene, options) {
         super(scene, options);
@@ -18,12 +18,12 @@ class Enemy extends IPlayerSprite {
                 let center_circle = new Phaser.Geom.Circle(this.x, this.y, 1)
                 if (Phaser.Geom.Intersects.CircleToRectangle(center_circle, cell.getBounds())) {
                     let intersec_points = Phaser.Geom.Intersects.GetCircleToRectangle(center_circle, cell.getBounds())
-                    const rate = Math.random()
+                    const rate      = Math.random()
                     if (rate < 0.50 && intersec_points.length) {
-                        let angle = Math.atan2((intersec_points[0].y - cell.y), (intersec_points[0].x - cell.x)) * 180 / Math.PI;
-                        this.cell = cell;
+                        let angle   = Math.atan2((intersec_points[0].y - cell.y), (intersec_points[0].x - cell.x)) * 180 / Math.PI;
+                        this.cell   = cell;
                         this.orbital = cell.setOrbitalPath(angle);
-                        this.count = 0;
+                        this.count  = 0;
                         this.switchMovement();
                         this.can_pass = false
                     }
@@ -37,11 +37,20 @@ class Enemy extends IPlayerSprite {
         if(this == this.scene.player) return;
         if (Phaser.Geom.Intersects.RectangleToRectangle(this.scene.player.getBounds(), this.getBounds())) {
             console.log("Çarptı") 
-            this.scene.sound_loss.play();
+            this.scene.sound_loss.play(); 
+            this.scene.sound_walk.stop();
+            this.scene.stop         = true
+            this.stop               = true 
+            this.scene.player.stop  = true
+            //all enemies set stop true
+            this.scene.enemy_group.children.each((enemy)=>{
+                enemy.stop = true; 
+            })
         }
     }
   
     preUpdate(time, delta) {
+        if(this.stop) return;
         this.isIntersecToPlayer(); 
         if (this.movement_type == null || this.movement_type == 'circular') {  
             if (this.hareket_yonu == '+') {
